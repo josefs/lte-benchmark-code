@@ -8,7 +8,7 @@
 
 define HELP_TEXT
 clear
-echo "Makefile for the Ericsson base station uplink benchmark"
+echo "Makefile for the LTE uplink reciever PHY benchmark"
 echo "Version 1.0 - 2010-12-08"
 echo "Author: Magnus Sjalander <hms@chalmers.se>"
 echo "--------------------------------------------------------------------------------"

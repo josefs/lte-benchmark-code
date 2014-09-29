@@ -17,7 +17,10 @@ the Tilera architecture will be compiled and the first time "run_cilk"
 or "run_cilk_pci" is executed the Cilk runtime will be downloaded and
 compiled (might take a lot of time).
 
-More information about the benchmark can be found in doc/uplink.pdf.
+More information about the benchmark can be found in doc/uplink.pdf and
+the ISPASS 2012 publication "An LTE Uplink Receiver PHY Benchmark and 
+Subframe-Based Power Management" that can be downloaded from 
+http://www.sjalander.com/research/pdf/sjalander-ispass2012.pdf.
 
 The benchmark has been tested on the following architectures and OSes: 
 o Tilera TILEPro64, Linux 2.6

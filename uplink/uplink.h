@@ -55,10 +55,12 @@ typedef struct {
   unsigned char bits[2*(OFDM_IN_SLOT-1)*MAX_SC*MOD_64QAM/24*MAX_LAYERS];
 } symbol_data;
 
+#ifndef __cplusplus
 typedef enum {
   true  = 1,
   false = 0
 } bool;
+#endif
 
 typedef struct task task;
 
@@ -103,7 +105,7 @@ void compute_symbol(task *task);
 void compute_chest(task *task);
 void *uplink_task(void *args);
 
-symbol_data global_symbolData[TASK_THREADS];
-task global_tasks[TASK_THREADS][(OFDM_IN_SLOT-1)*MAX_LAYERS];
+extern symbol_data global_symbolData[TASK_THREADS];
+extern task global_tasks[TASK_THREADS][(OFDM_IN_SLOT-1)*MAX_LAYERS];
 
 #endif

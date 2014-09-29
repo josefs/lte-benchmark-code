@@ -35,7 +35,7 @@ LIB        = ${ROOT}/lib
 ULRSGEN    = ${LIB}/ulRsGen
 TIME_LIB   = ${LIB}/time
 KERNELS    = ${LIB}/kernels
-FLAGS      = -O3 -Wall -I ${UPLINK} -I ${TIME_LIB} -I ${KERNELS} -I ${ULRSGEN}/common/inc/ -I ${ULRSGEN}/inc/ -I ${ULRSGEN}/src/ 
+FLAGS      = -O3 -Wall -I ${UPLINK} -I ${TIME_LIB} -I ${KERNELS} -I ${ULRSGEN}/common/inc/ -I ${ULRSGEN}/inc/ -I ${ULRSGEN}/src/ -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=200809L
 
 OBJECTS = \
 	${UPLINK}/uplink_parameters.o			\
@@ -92,6 +92,13 @@ COMP   = ${CC}
 CFLAGS = -g ${FLAGS}
 OBJECTS_ARCH = \
 	${UPLINK}/uplink_serial.o
+else ifdef ff
+CC       = g++
+COMP     = g++
+CFLAGS   = -g ${FLAGS} -lpthread
+CPPFLAGS = -std=c++11 -fpermissive -g ${FLAGS} -I ${LIB}/fastflow-2.0.4 -lpthread
+OBJECTS_ARCH = \
+	${UPLINK}/uplink_ff.o
 else
 CC     = $(BIN)tile-cc
 COMP   = ${CC}
@@ -111,7 +118,7 @@ uplink: ${EXECUTABLE}
 
 
 ${EXECUTABLE}: ${OBJECTS} ${OBJECTS_ARCH} ${UPLINK}/def.h
-	${COMP} ${CFLAGS} -lm -lpthread ${OBJECTS_ARCH} ${OBJECTS} -o ${EXECUTABLE}
+	${COMP} ${CFLAGS} ${OBJECTS_ARCH} ${OBJECTS} -lm -lpthread -o ${EXECUTABLE}
 
 .PHONY: clean_uplink
 clean_uplink: 

@@ -45,6 +45,6 @@ void _uplink_interleave_verify(int subframe, complex *data, int length);
 void _init_verify(void);
 void _uplink_write_verify_data(int subframes);
 
-short verification_errors;
+static short verification_errors;
 
 #endif

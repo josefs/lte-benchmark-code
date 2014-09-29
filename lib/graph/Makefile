@@ -38,40 +38,40 @@ ${LOG_DIR}/graph/%.pdf: ${LOG_DIR}/%_samples
 
 .PHONY: correlation_graph
 correlation_graph: correlation_data
-	@pl ${ROOT}/lib/graph/correlation.pl
+	@ploticus ${ROOT}/lib/graph/correlation.pl
 
 .PHONY: active_core_graph
 active_core_graph: ${LOG_DIR}/estimated_active_cores_processed
-	@pl ${ROOT}/lib/graph/estimated_active_cores.pl
+	@ploticus ${ROOT}/lib/graph/estimated_active_cores.pl
 
 .PHONY: dynamic_pow_graph
 dynamic_pow_graph:
-	@pl ${ROOT}/lib/graph/dynamic-power.pl
+	@ploticus ${ROOT}/lib/graph/dynamic-power.pl
 
 .PHONY: static_pow_graph
 static_pow_graph:
-	@pl ${ROOT}/lib/graph/static-power.pl
+	@ploticus ${ROOT}/lib/graph/static-power.pl
 
 .PHONY: input_PRB_graph
 input_PRB_graph: ${LOG_DIR}/input_parameters_processed
-	@pl ${ROOT}/lib/graph/input_parameters_RB.pl
+	@ploticus ${ROOT}/lib/graph/input_parameters_RB.pl
 
 .PHONY: input_layer_graph
 input_layer_graph: ${LOG_DIR}/input_parameters_processed
-	@pl ${ROOT}/lib/graph/input_parameters_layer.pl
+	@ploticus ${ROOT}/lib/graph/input_parameters_layer.pl
 
 .PHONY: input_user_graph
 input_user_graph: ${LOG_DIR}/input_parameters_processed
-	@pl ${ROOT}/lib/graph/input_parameters_users.pl
+	@ploticus ${ROOT}/lib/graph/input_parameters_users.pl
 
 .PHONY: load_graph
 load_graph: ${LOG_DIR}/estimated_load_processsed
-	@pl ${ROOT}/lib/graph/estimated_load.pl
+	@ploticus ${ROOT}/lib/graph/estimated_load.pl
 
 .PHONY: workload_graph
 workload_graph: ${LOG_DIR}/workload_nap_nousleep_processed
-	@pl ${ROOT}/lib/graph/workload-nap.pl
+	@ploticus ${ROOT}/lib/graph/workload-nap.pl
 
 .PHONY: stew2011_graph
 stew2011_graph: ${LOG_DIR}/workload_nap_nousleep_processed
-	@pl ${ROOT}/lib/graph/stew2011.pl
+	@ploticus ${ROOT}/lib/graph/stew2011.pl

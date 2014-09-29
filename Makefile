@@ -59,6 +59,7 @@ echo "--------------------------------------------------------------------------
 echo "run_pci            Compiles the benchmark and launch it on Tilera"
 echo "run_sim            Compiles the benchmark and launch it in the simulator"
 echo "run_x86            Compiles the benchmark and launch it on the local x86 machine"
+echo "run_ff             Compiler the benchmark with the FastFlow runtime on x86"
 echo "run_cilk           Compiles the benchmark with the Cilk runtime on x86"
 echo "run_cilk_pci       Compiles the benchmark with the Cilk runtime on Tilera"
 echo "profile            Executes the application on Tilera with oprofile enabled"
@@ -191,6 +192,15 @@ run_serial:
 	@${EXECUTABLE}
 
 ###########################################################
+#                        FastFlow                         #
+###########################################################
+
+.PHONY: run_ff
+run_ff:
+	@make uplink ff=1
+	@${EXECUTABLE}
+
+###########################################################
 #                         CILK                            #
 ###########################################################
 
@@ -225,7 +235,7 @@ ${CILK_BUILD}/Makefile:
 
 ${CILK_ROOT}/bin/cilkc: ${CILK_BUILD}/Makefile
 	@-cd ${CILK_BUILD} && \
-	./configure --prefix=${CILK_ROOT} && \
+	./configure --prefix=${CILK_ROOT} CFLAGS="-D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=200809L" && \
 	make; \
 	make install
 

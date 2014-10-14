@@ -23,6 +23,8 @@
 #include "turbo_dec_12.h"
 #include "weight_calc_6.h"
 
+#include <sys/time.h>
+
 int main(int argc, char* argv[]) {
   /* Some areas to be used */
   complexMatrix_t comb_w[MAX_SC];
@@ -47,12 +49,19 @@ int main(int argc, char* argv[]) {
   parameter_model pmodel;
   userS *user;
   
+  // Timing
+  struct timeval ti, tf;
+  int i;
+
   init_parameter_model(&pmodel);
   init_verify();
   init_data();
   crcInit();
-  
-  while(1) {
+
+  gettimeofday(&ti, NULL);
+
+  for(i=0;i < ITERATIONS; i++) {
+  //  while(1) {
     /* For each subframe, a new set of user parameters is delivered from the
        control plane, we just call a function */
     parameters = uplink_parameters(&pmodel);
@@ -161,6 +170,10 @@ int main(int argc, char* argv[]) {
     } /* user loop */
     free(parameters);
   } /* subframe for loop */
+
+  gettimeofday(&tf, NULL);
+  double time = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
+  printf ("It took me %f milliseconds.\n",time);
 
   return 0;
 }

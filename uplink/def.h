@@ -70,4 +70,7 @@
 #define TASK_THREADS      62
 #endif
 
+/* Number of iterations to run the benchmark when timing it */
+#define ITERATIONS 100
+
 #endif

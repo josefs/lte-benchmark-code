@@ -35,7 +35,7 @@ LIB        = ${ROOT}/lib
 ULRSGEN    = ${LIB}/ulRsGen
 TIME_LIB   = ${LIB}/time
 KERNELS    = ${LIB}/kernels
-FLAGS      = -O3 -Wall -I ${UPLINK} -I ${TIME_LIB} -I ${KERNELS} -I ${ULRSGEN}/common/inc/ -I ${ULRSGEN}/inc/ -I ${ULRSGEN}/src/ -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=200809L -DITERATIONS=100
+FLAGS      = -O3 -Wall -I ${UPLINK} -I ${TIME_LIB} -I ${KERNELS} -I ${ULRSGEN}/common/inc/ -I ${ULRSGEN}/inc/ -I ${ULRSGEN}/src/ -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=200809L
 
 OBJECTS = \
 	${UPLINK}/uplink_parameters.o			\

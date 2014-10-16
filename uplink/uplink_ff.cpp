@@ -26,15 +26,26 @@
 
 #include <sys/time.h>
 
-#define WORKERS 3
+#define WORKERS 4
 
 using namespace ff;
 
+struct ChestWorker : ff_node {
+public:
+  ChestWorker() { }
+  void *svc(void *t) {
+    return GO_ON;
+  }
+};
+
 struct UserWorker : ff_node {
 private:
+  //  ff_farm<> farm(true);
   int counter;
 public:
-  UserWorker() { counter = 0; }
+  UserWorker() {
+    counter = 0;
+  }
   int getCounter() { return counter; }
   void *svc(void *t) {
     counter++;
@@ -212,14 +223,14 @@ int main(int argc, char* argv[]) {
 
   farm.wait();
 
+  gettimeofday(&tf, NULL);
+
   for(int quux=0; quux<WORKERS;quux++) {
     printf("Counter : %d\n",((UserWorker*)(Users[quux]))->getCounter());
   }
 
-  gettimeofday(&tf, NULL);
   double time = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
   printf ("It took me %f milliseconds.\n",time);
 
   return 0;
 }
-

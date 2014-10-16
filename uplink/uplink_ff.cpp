@@ -194,12 +194,7 @@ int main(int argc, char* argv[]) {
   for(i = 0; i < ITERATIONS; i++) {
     /* For each subframe, a new set of user parameters is delivered from the
        control plane, we just call a function */
-    /*    struct timeval pi, pf;
-	  gettimeofday(&pi,NULL); */
     parameters = uplink_parameters(&pmodel);
-    /*    gettimeofday(&pf,NULL);
-    double time = (pf.tv_sec - pi.tv_sec)*1000 + (pf.tv_usec - pi.tv_usec)/1000.0;
-    printf ("Parameters took %f milliseconds.\n",time); */
 
     firstUser = parameters->first;
 

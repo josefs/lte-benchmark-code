@@ -26,15 +26,26 @@
 
 #include <sys/time.h>
 
-#define WORKERS 3
+#define WORKERS 4
 
 using namespace ff;
 
+struct ChestWorker : ff_node {
+public:
+  ChestWorker() { }
+  void *svc(void *t) {
+    return GO_ON;
+  }
+};
+
 struct UserWorker : ff_node {
 private:
+  //  ff_farm<> farm(true);
   int counter;
 public:
-  UserWorker() { counter = 0; }
+  UserWorker() {
+    counter = 0;
+  }
   int getCounter() { return counter; }
   void *svc(void *t) {
     counter++;
@@ -169,8 +180,6 @@ int main(int argc, char* argv[]) {
   init_data();
   crcInit();
 
-  gettimeofday(&ti, NULL);
-
   std::vector<ff_node *> Users;
   ff_farm<> farm(true);
   for(int workers = 0; workers < WORKERS; workers++) {
@@ -180,10 +189,18 @@ int main(int argc, char* argv[]) {
   farm.set_scheduling_ondemand();
   farm.remove_collector();
 
+  gettimeofday(&ti, NULL);
+
   for(i = 0; i < ITERATIONS; i++) {
     /* For each subframe, a new set of user parameters is delivered from the
        control plane, we just call a function */
+    /*    struct timeval pi, pf;
+	  gettimeofday(&pi,NULL); */
     parameters = uplink_parameters(&pmodel);
+    /*    gettimeofday(&pf,NULL);
+    double time = (pf.tv_sec - pi.tv_sec)*1000 + (pf.tv_usec - pi.tv_usec)/1000.0;
+    printf ("Parameters took %f milliseconds.\n",time); */
+
     firstUser = parameters->first;
 
     farm.run_then_freeze();
@@ -212,14 +229,14 @@ int main(int argc, char* argv[]) {
 
   farm.wait();
 
+  gettimeofday(&tf, NULL);
+
   for(int quux=0; quux<WORKERS;quux++) {
     printf("Counter : %d\n",((UserWorker*)(Users[quux]))->getCounter());
   }
 
-  gettimeofday(&tf, NULL);
   double time = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
   printf ("It took me %f milliseconds.\n",time);
 
   return 0;
 }
-

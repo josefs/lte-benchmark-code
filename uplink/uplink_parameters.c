@@ -237,19 +237,22 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
     if (PROB_EXTRA_LAYER*pmodel->count/80 > (rand()/(float)RAND_MAX)) users->nmbLayer++;
 
     users->startRB = startPos;
-    
+
+    newRB = 10;
+    /*
     newRB = (int)(MAX_RB*(rand()/(float)RAND_MAX));
 
     distribution = rand()/(float)RAND_MAX;
-
+    */
     /* Create a nonlinear distribution of the RBs between users */
+    /*
     if (distribution < 0.4)
       newRB = newRB/8;
     else if (distribution < 0.6)
       newRB = newRB/4;
     else if (distribution < 0.9)
       newRB = newRB/2;
-
+    */
     /* A user has at leas one RB */
     if (!newRB)
       newRB = 1;

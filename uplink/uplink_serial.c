@@ -52,11 +52,16 @@ int main(int argc, char* argv[]) {
   // Timing
   struct timeval ti, tf;
   int i;
+  int experiment;
 
   init_parameter_model(&pmodel);
   init_verify();
   init_data();
   crcInit();
+
+  double time=0.0;
+
+  for(experiment=0;experiment<15;experiment++) {
 
   gettimeofday(&ti, NULL);
 
@@ -172,8 +177,10 @@ int main(int argc, char* argv[]) {
   } /* subframe for loop */
 
   gettimeofday(&tf, NULL);
-  double time = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
-  printf ("It took me %f milliseconds.\n",time);
+  time += (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
+  }
+
+  printf ("%f ",time/15);
 
   return 0;
 }

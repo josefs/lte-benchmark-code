@@ -174,7 +174,7 @@ void init_parameter_model(parameter_model *pmodel) {
   pmodel->activity[0] = 0;
   pmodel->activity[1] = 0;
   pmodel->activity[2] = 0;
-  printf("#Users TotalRB MaxRB MinRB MaxLayer MinLayer MaxMod MinMod Count\n");
+  //  printf("#Users TotalRB MaxRB MinRB MaxLayer MinLayer MaxMod MinMod Count\n");
 }
 
 user_parameters *uplink_parameters(parameter_model *pmodel) {
@@ -310,7 +310,7 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
   active = ceil(TASK_THREADS*(load_perc/100))+2;
   pmodel->active = active;
 
-  printf("QPSK: %3i, 16QAM: %3i, 64QAM: %3i, Users: %2i, Active: %2i, Count: %2i, Load: %3.1f\n", load_QPSK, load_16QAM, load_64QAM, nmbUsers, pmodel->active, pmodel->count, load_perc);
+  //  printf("QPSK: %3i, 16QAM: %3i, 64QAM: %3i, Users: %2i, Active: %2i, Count: %2i, Load: %3.1f\n", load_QPSK, load_16QAM, load_64QAM, nmbUsers, pmodel->active, pmodel->count, load_perc);
 
   return parameters;
 }
@@ -436,7 +436,7 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
     load += users->nmbRB*users->nmbLayer;
   }
 
-  printf("Load: %3i, Users: %2i\n", load, nmbUsers);
+  //printf("Load: %3i, Users: %2i\n", load, nmbUsers);
 
   return parameters;
 }
@@ -519,7 +519,7 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
     load += user_load(users->nmbRB, users->nmbLayer, users->mod);
   }
 
-  printf("Load: %3i, Users: %2i\n", load, nmbUsers);
+  //printf("Load: %3i, Users: %2i\n", load, nmbUsers);
 
   if (nmbUsers)
     return parameters;
@@ -549,7 +549,7 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
   if (new_second()) {
     pmodel->countdown--;
     if (pmodel->countdown == 0) {
-      printf("RB=%3i, Layer=%2i, Mod=%i\n", pmodel->inc % MAX_RB + 1,  (int)(pmodel->inc/MAX_RB) + 1, MODULATION);
+      //printf("RB=%3i, Layer=%2i, Mod=%i\n", pmodel->inc % MAX_RB + 1,  (int)(pmodel->inc/MAX_RB) + 1, MODULATION);
       pmodel->inc++;
       pmodel->active++;
       pmodel->countdown = PERIOD;
@@ -591,7 +591,7 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
   mod = (int)(pmodel->inc/(MAX_RB*MAX_LAYERS));
   if (new_second()) {
     pmodel->countdown--;
-    printf("RB=%3i, Layer=%2i, Mod=%i\n", pmodel->inc%MAX_RB+1,  (int)(pmodel->inc/MAX_RB)%MAX_LAYERS+1, mod);
+    //printf("RB=%3i, Layer=%2i, Mod=%i\n", pmodel->inc%MAX_RB+1,  (int)(pmodel->inc/MAX_RB)%MAX_LAYERS+1, mod);
     pmodel->active++;
     if (pmodel->countdown == 0) {
       pmodel->inc++;
@@ -650,7 +650,7 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
   if (new_second()) {
     pmodel->countdown--;
     if (pmodel->countdown == 0) {
-      printf("USERS=%2i\n", pmodel->inc);
+      //printf("USERS=%2i\n", pmodel->inc);
       pmodel->inc++;
       pmodel->active++;
       pmodel->countdown = PERIOD;
@@ -725,7 +725,7 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
   }
   parameters->last = users;
 
-  printf("Subframe: %i, users: %2i, RB: %3i, Layer: %i, Mod: %i\n", users->subframe, current_users, current_rb, current_layer, current_mod);
+  //printf("Subframe: %i, users: %2i, RB: %3i, Layer: %i, Mod: %i\n", users->subframe, current_users, current_rb, current_layer, current_mod);
 
   current_rb++;
   if (current_rb*current_users > MAX_RB) {
@@ -746,7 +746,7 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
       current_users++;
       break;
     default:
-      printf("No such modulation.\n");
+      //printf("No such modulation.\n");
       exit(1);
       break;
     }

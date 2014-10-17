@@ -155,7 +155,7 @@ float user_load(int nmbRB, int nmbLayer, int mod) {
   resulting in almost all users having one layer and using QPSK as
   modulation. The probabillity is increased over 170 steps until all
   users will have four layers and use 64 QAM modulation. When maximum
-  load has been reached the probabillity is instead being reduced over
+  load has been reached the probability is instead being reduced over
   170 steps until it reaches the same level as in the beginning. */
 
 #define COUNTDOWN 1
@@ -264,7 +264,7 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
     
     nmbRB = nmbRB - users->nmbRB;
     startPos = startPos + users->nmbRB;
-    
+    /*
     users->mod = MOD_QPSK;
     if (PROB_MOD*pmodel->count/80 > (rand()/(float)RAND_MAX)) {
       users->mod = MOD_16QAM;
@@ -272,7 +272,9 @@ user_parameters *uplink_parameters(parameter_model *pmodel) {
 	users->mod = MOD_64QAM;
       }
     }
-
+    */
+    users->mod = MOD_64QAM;
+    //users->mod = MOD_QPSK;
     users->data = &data[subframe_data()];
 
     nmbUsers++;

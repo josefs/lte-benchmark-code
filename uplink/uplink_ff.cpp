@@ -22,11 +22,9 @@
 #include "crc_13.h"
 #include "turbo_dec_12.h"
 #include "weight_calc_6.h"
-#include <ff/parallel_for.hpp>
+#include <ff/farm.hpp>
 
 #include <sys/time.h>
-
-#define WORKERS 4
 
 using namespace ff;
 
@@ -171,6 +169,11 @@ int main(int argc, char* argv[]) {
   parameter_model pmodel;
   userS *user, *firstUser;
 
+  double time = 0.0;
+  int experiment;
+
+  for(experiment=0;experiment<15;experiment++) {
+
   // Timing
   struct timeval ti, tf;
   int i;
@@ -180,13 +183,16 @@ int main(int argc, char* argv[]) {
   init_data();
   crcInit();
 
+  int WORKERS = atoi(argv[1]);
+  int demand = atoi(argv[2]);
+
   std::vector<ff_node *> Users;
   ff_farm<> farm(true);
   for(int workers = 0; workers < WORKERS; workers++) {
     Users.push_back(new UserWorker());
   }
   farm.add_workers(Users);
-  farm.set_scheduling_ondemand();
+  farm.set_scheduling_ondemand(demand);
   farm.remove_collector();
 
   gettimeofday(&ti, NULL);
@@ -225,13 +231,14 @@ int main(int argc, char* argv[]) {
   farm.wait();
 
   gettimeofday(&tf, NULL);
-
+  time += (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
+  }
+  /*
   for(int quux=0; quux<WORKERS;quux++) {
     printf("Counter : %d\n",((UserWorker*)(Users[quux]))->getCounter());
   }
-
-  double time = (tf.tv_sec - ti.tv_sec)*1000 + (tf.tv_usec - ti.tv_usec)/1000.0;
-  printf ("It took me %f milliseconds.\n",time);
+  */
+  printf ("%f ",time/15);
 
   return 0;
 }

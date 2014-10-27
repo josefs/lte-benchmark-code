@@ -35,7 +35,7 @@ LIB        = ${ROOT}/lib
 ULRSGEN    = ${LIB}/ulRsGen
 TIME_LIB   = ${LIB}/time
 KERNELS    = ${LIB}/kernels
-FLAGS      = -O3 -Wall -I ${UPLINK} -I ${TIME_LIB} -I ${KERNELS} -I ${ULRSGEN}/common/inc/ -I ${ULRSGEN}/inc/ -I ${ULRSGEN}/src/ -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=200809L
+FLAGS      = -O3 -I ${UPLINK} -I ${TIME_LIB} -I ${KERNELS} -I ${ULRSGEN}/common/inc/ -I ${ULRSGEN}/inc/ -I ${ULRSGEN}/src/ -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=200809L
 
 OBJECTS = \
 	${UPLINK}/uplink_parameters.o			\
@@ -96,7 +96,7 @@ else ifdef ff
 CC       = g++
 COMP     = g++
 CFLAGS   = -g ${FLAGS} -lpthread
-CPPFLAGS = -std=c++11 -fpermissive -g ${FLAGS} -I ${LIB}/fastflow-2.0.4 -lpthread
+CPPFLAGS = -g ${FLAGS} -I /usr/local/fastflow-2.0.4 -lpthread
 OBJECTS_ARCH = \
 	${UPLINK}/uplink_ff.o
 else

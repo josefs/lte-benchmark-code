@@ -1,0 +1,34 @@
+#SCRIPT DE GRAF GNUPLOT
+set terminal postscript landscape 18 
+set size 30/30 , 1.
+set pointsize 1
+
+if (!exists("name")) name='NOFUNC'
+#if (!exists("namex")) name='NOFUNC'
+set title name." - Scalability"
+#set title "SCALABILITY"
+
+set key left top
+
+#if(ylogcase2==1) set ylabel "Time (ms - logscale)"
+#if(ylogcase2==0) set ylabel "Time (ms)"
+#if(ylogcase2==1) set logscale y
+#set logscale y
+set ylabel "Time(ms)"
+
+#if(xlog==1) set xlabel namex." (logscale)" offset 0,-1
+#if(xlog==0) set xlabel namex offset 0,-1
+#if(xlog==1) set logscale x
+#set xtics rotate by 50 offset -2,-2.5
+set xlabel "#processors"
+set autoscale
+
+set output "temp.eps"
+
+#if(social==1) set yrange[400:1600]
+
+plot \
+"./fenix.grafo" 	using 1:2:xtic(1) title "Demand 1" with linespoints linewidth 02 pointsize 02,\
+"./fenix.grafo" 	using 1:3:xtic(1) title "Demand 2" with linespoints linewidth 02 pointsize 02,\
+"./fenix.grafo" 	using 1:4:xtic(1) title "Demand 3" with linespoints linewidth 02 pointsize 02,\
+"./fenix.grafo" 	using 1:5:xtic(1) title "Serial" with linespoints linewidth 02 pointsize 02

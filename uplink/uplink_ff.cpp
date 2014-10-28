@@ -28,21 +28,84 @@
 
 using namespace ff;
 
+struct chest_param {
+  int slot;
+  int startSc;
+  int nmbSc;
+  int layer;
+  input_data *user_data;
+  scData_t (*layer_data)[MAX_LAYERS][RX_ANT];
+  int (*res_power)[4];
+  int (*pow)[4];
+  complexMatrix_t *R;
+  int antenna;
+  chest_param(int slot, int startSc, int nmbSc, int layer,
+	      input_data *user_data,
+	      scData_t (*layer_data)[MAX_LAYERS][RX_ANT],
+	      int (*res_power)[4], int (*pow)[4], complexMatrix_t *R,
+	      int antenna
+	      ) :
+    slot(slot), startSc(startSc), nmbSc(nmbSc), layer(layer),
+    user_data(user_data),
+    layer_data(layer_data), res_power(res_power), pow(pow), R(R),
+    antenna(antenna)
+  {}
+};
+
 struct ChestWorker : ff_node {
 public:
   ChestWorker() { }
   void *svc(void *t) {
+    chest_param *cp = (chest_param*)t;
+    int slot    = cp->slot;
+    int startSc = cp->startSc;
+    int nmbSc   = cp->nmbSc;
+    int layer   = cp->layer;
+    int (*res_power)[4] = cp->res_power;
+    input_data *user_data = cp->user_data;
+    scData_t (*layer_data)[MAX_LAYERS][RX_ANT] = cp->layer_data;
+    int (*pow)[4] = cp->pow;
+    complexMatrix_t *R = cp->R;
+    int antenna = cp->antenna;
+
+    mf(&user_data->in_data[slot][3][antenna][startSc], &user_data->in_rs[slot][startSc][layer], nmbSc, (*layer_data)[layer][antenna], &(*pow)[antenna]);
+
+    ifft((*layer_data)[layer][antenna], nmbSc, user_data->fftw[slot]);
+
+    chest((*layer_data)[layer][antenna], (*pow)[antenna], nmbSc, (*layer_data)[layer][antenna], res_power[antenna]);
+
+    (*R)[layer][antenna] = cmake((*res_power)[antenna],0);
+
+    fft((*layer_data)[layer][antenna], nmbSc, user_data->fftw[slot]);
+
     return GO_ON;
   }
 };
 
 struct UserWorker : ff_node {
 private:
-  //  ff_farm<> farm(true);
+  ff_farm<> *farm;
+  bool use_farm;
   int counter;
 public:
   UserWorker() {
     counter = 0;
+    use_farm = false;
+  }
+  UserWorker(int chest_workers) {
+    counter = 0;
+    use_farm = false;
+    if (chest_workers > 1) {
+      farm = new ff_farm<>(true);
+      std::vector<ff_node *> ChestWorkers;
+      for(int workers = 0; workers < chest_workers; workers++) {
+	ChestWorkers.push_back(new ChestWorker());
+      }
+      farm->add_workers(ChestWorkers);
+      farm->set_scheduling_ondemand(); // TODO: add demand parameter
+      farm->remove_collector();
+      use_farm = true;
+    }
   }
   int getCounter() { return counter; }
   void *svc(void *t) {
@@ -83,23 +146,46 @@ public:
 	     OK now call the functions for channel estimate */
 	  
 	  /* This is hardcoded to 4 RX antennas !!! */
-	  
-	  for(int antenna=0; antenna < 4; antenna++) {
-	    mf(&user->data->in_data[slot][3][antenna][startSc], &user->data->in_rs[slot][startSc][layer], nmbSc, layer_data[layer][antenna], &pow[antenna]);
+
+	  if (use_farm) {
+
+	    farm->run_then_freeze();
+
+	    chest_param *(chest[4]) = {NULL,NULL,NULL,NULL};
+	    for (int antenna=0; antenna < 4; antenna++) {
+	      chest[antenna] =
+		new chest_param(slot,startSc, nmbSc, layer,
+				user->data,
+				&layer_data,
+				&res_power, &pow, &R,
+				antenna);
+	      farm->offload(chest[antenna]);
+	    }
+	    farm->offload(EOS);
+	    farm->wait_freezing();
+
+	    for(int antenna=0; antenna < 4; antenna++) {
+	      free(chest[antenna]);
+	    }
+
+	  } else {
+	    for(int antenna=0; antenna < 4; antenna++) {
+	      mf(&user->data->in_data[slot][3][antenna][startSc], &user->data->in_rs[slot][startSc][layer], nmbSc, layer_data[layer][antenna], &pow[antenna]);
+	    }
+
+	    for(int antenna=0; antenna < 4; antenna++)
+	      ifft(layer_data[layer][antenna], nmbSc, user->data->fftw[slot]);
+
+	    for(int antenna=0; antenna < 4; antenna++)
+	      chest(layer_data[layer][antenna], pow[antenna], nmbSc, layer_data[layer][antenna], &res_power[antenna]);
+
+	    /* Put power values in the R matrix */
+	    for(int antenna=0; antenna < 4; antenna++)
+	      R[layer][antenna] = cmake(res_power[antenna],0);
+
+	    for(int antenna=0; antenna < 4; antenna++)
+	      fft(layer_data[layer][antenna], nmbSc, user->data->fftw[slot]);
 	  }
-	  
-	  for(int antenna=0; antenna < 4; antenna++)
-	    ifft(layer_data[layer][antenna], nmbSc, user->data->fftw[slot]);
-	  
-	  for(int antenna=0; antenna < 4; antenna++)
-	    chest(layer_data[layer][antenna], pow[antenna], nmbSc, layer_data[layer][antenna], &res_power[antenna]);
-	  
-	  /* Put power values in the R matrix */
-	  for(int antenna=0; antenna < 4; antenna++)
-	    R[layer][antenna] = cmake(res_power[antenna],0);
-	  
-	  for(int antenna=0; antenna < 4; antenna++)
-	    fft(layer_data[layer][antenna], nmbSc, user->data->fftw[slot]);
 	}
 
 	uplink_layer_verify(user->subframe, layer_data, R, nmbSc, user->nmbLayer, slot);
@@ -183,13 +269,14 @@ int main(int argc, char* argv[]) {
   init_data();
   crcInit();
 
-  int WORKERS = atoi(argv[1]);
-  int demand = atoi(argv[2]);
+  int WORKERS = argc > 1 ? atoi(argv[1]) : 1;
+  int demand = argc > 2 ? atoi(argv[2]) : 1;
+  int chest = argc > 3 ? atoi(argv[3]) : 1;
 
   std::vector<ff_node *> Users;
   ff_farm<> farm(true);
   for(int workers = 0; workers < WORKERS; workers++) {
-    Users.push_back(new UserWorker());
+    Users.push_back(new UserWorker(chest));
   }
   farm.add_workers(Users);
   farm.set_scheduling_ondemand(demand);
@@ -207,7 +294,6 @@ int main(int argc, char* argv[]) {
     farm.run_then_freeze();
 
     // Parallelize the processing of users
-    std::vector<ff_node *> Users;
     while (parameters->first) {
       user = parameters->first;
       farm.offload(user);
